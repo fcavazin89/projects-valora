@@ -3,31 +3,39 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9"
   NEXT_TELEMETRY_DISABLED = "1"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Redireciona tudo para o Next.js (necessário para rotas dinâmicas)
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/___netlify-handler"
-  status = 200
-  force = false
+# Variáveis de ambiente de produção
+# Configure em: Netlify > Site > Environment Variables
+# NEXT_PUBLIC_WEB3AUTH_CLIENT_ID         = BMtfs9bDQu20v7ZcW-Y92v3EOBXgEh4Gcmj0QOpufg1LNBFS4MxroXjNDvYMRMJVDIinvsAv9Up2rjqdMvWjmtE
+# NEXT_PUBLIC_API_URL                    = https://sua-valora-api.com
+# NEXT_PUBLIC_MERCHANT_APP_URL           = https://comerciante.netlify.app
+# NEXT_PUBLIC_APP_URL                    = https://voucher.netlify.app
+# NEXT_PUBLIC_CHAIN_ID                   = 11155111
+# NEXT_PUBLIC_RPC_URL                    = https://rpc.ankr.com/eth_sepolia
+# NEXT_PUBLIC_VOUCHER_CONTRACT_ADDRESS   = 0x...
+# CONTRACT_ADMIN_PRIVATE_KEY             = 0x...  (NUNCA expor no client)
 
-# Headers de segurança + PWA
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    # Necessário para câmera no PWA
     Permissions-Policy = "camera=(self), microphone=(), geolocation=(self)"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
 
-# Service Worker precisa de escopo raiz
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Service Worker do PWA
 [[headers]]
   for = "/sw.js"
   [headers.values]
@@ -38,22 +46,3 @@
   for = "/workbox-*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# Manifest PWA
-[[headers]]
-  for = "/manifest.json"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-    Content-Type = "application/manifest+json"
-
-# Cache de assets estáticos
-[[headers]]
-  for = "/_next/static/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Cache de ícones PWA
-[[headers]]
-  for = "/icons/*"
-  [headers.values]
-    Cache-Control = "public, max-age=86400"

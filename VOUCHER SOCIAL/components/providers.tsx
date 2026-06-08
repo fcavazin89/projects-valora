@@ -7,24 +7,42 @@ import web3AuthContextConfig from "@/lib/web3/web3auth-config"
 
 const Web3AuthProvider = dynamic(
   () => import("@web3auth/modal/react").then((m) => m.Web3AuthProvider),
-  { ssr: false },
+  { ssr: false, loading: () => <div className="min-h-screen bg-emerald-50" /> },
 )
 
 const WagmiProvider = dynamic(
   () => import("@web3auth/modal/react/wagmi").then((m) => m.WagmiProvider),
-  { ssr: false },
+  { ssr: false, loading: () => <div className="min-h-screen bg-emerald-50" /> },
 )
 
+// Cria o QueryClient fora do componente para evitar recriação
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Sem Web3Auth configurado ou antes de montar: só QueryClient
-  if (!mounted || !web3AuthContextConfig) {
+  // Sempre retorna o QueryClientProvider primeiro
+  if (!mounted) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <div className="min-h-screen bg-emerald-50" />
+      </QueryClientProvider>
+    )
+  }
+
+  // Sem Web3Auth configurado: mostra aplicação em modo demo
+  if (!web3AuthContextConfig) {
     return (
       <QueryClientProvider client={queryClient}>
         {children}

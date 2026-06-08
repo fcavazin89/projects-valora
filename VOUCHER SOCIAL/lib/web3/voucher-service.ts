@@ -222,13 +222,28 @@ export class VoucherService {
   }
 
   /** Notifica a API do comerciante que o QR foi lido pelo beneficiário */
-  async notifyQRScanned(chargeId: string, apiUrl?: string): Promise<void> {
-    const url = apiUrl || `${getBaseUrl()}/api/charges/approve`
-    // Só notifica, não aguarda resultado — o comerciante faz polling
+  async notifyQRScanned(
+    chargeId: string,
+    apiUrl?: string,
+    beneficiaryAddress?: string
+  ): Promise<void> {
+    // Usa a URL do QR (do comerciante) ou constrói a URL padrão
+    const merchantAppUrl =
+      typeof window !== "undefined"
+        ? process.env.NEXT_PUBLIC_MERCHANT_APP_URL || "http://localhost:3000"
+        : process.env.NEXT_PUBLIC_MERCHANT_APP_URL || "http://localhost:3000"
+
+    const url = apiUrl || `${merchantAppUrl}/api/charges/approve`
+
+    // Notifica — não bloqueia o fluxo do usuário
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chargeId, scannedAt: new Date().toISOString() }),
+      body: JSON.stringify({
+        chargeId,
+        beneficiaryAddress: beneficiaryAddress || embeddedWallet.getAddress() || "0x0000000000000000000000000000000000000000",
+        scannedAt: new Date().toISOString(),
+      }),
     }).catch(() => {})
   }
 

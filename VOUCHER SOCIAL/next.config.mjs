@@ -1,32 +1,37 @@
 import withPWA from '@ducanh2912/next-pwa'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 const pwaConfig = withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: false,
+  disable: isDev, // Desabilita PWA em desenvolvimento
   reloadOnOnline: true,
   cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
+  aggressiveFrontEndNavCaching: false,
   fallbacks: {
     document: '/offline',
+  },
+  workboxOptions: {
+    disableDevLogs: true,
   },
 })
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
     unoptimized: true,
   },
-  // Turbopack config
+  // Configuração vazia do Turbopack para aceitar o webpack do PWA
   turbopack: {},
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
