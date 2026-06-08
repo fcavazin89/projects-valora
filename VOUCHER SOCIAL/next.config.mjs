@@ -26,8 +26,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Configuração vazia do Turbopack para aceitar o webpack do PWA
-  turbopack: {},
   async headers() {
     return [
       {
