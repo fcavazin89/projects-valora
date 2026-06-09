@@ -21,9 +21,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import dynamic from "next/dynamic"
 import { useWallet, useVoucherBalance, useQRScanner } from "@/hooks/use-web3"
 import { useWeb3AuthConnect } from "@web3auth/modal/react"
-import dynamic from "next/dynamic"
+import { InstallPWAButton } from "@/components/install-pwa"
 
 // Carrega o scanner de câmera apenas no browser (usa APIs de câmera)
 const QrCameraScanner = dynamic(
@@ -92,7 +93,6 @@ export function SocialVoucherWallet() {
   const [currentView, setCurrentView] = useState<View>("login")
   const [selectedVoucher, setSelectedVoucher] = useState<VoucherId>("alimentacao")
   const [qrRefreshKey, setQrRefreshKey] = useState(0)
-  
   // Web3 hooks - MetaMask Embedded Wallets (Web3Auth)
   const wallet = useWallet()
   const { balances, totalBalance, isLoading: isLoadingBalances, refetch } = useVoucherBalance()
@@ -248,6 +248,11 @@ function LoginView({ onLogin }: { onLogin: () => void }) {
             <div className="mt-6 flex items-center justify-center gap-2 text-xs text-gray-400">
               <Shield className="h-4 w-4" />
               <span>Autenticação segura via MetaMask Embedded Wallets</span>
+            </div>
+
+            {/* Install PWA */}
+            <div className="mt-3 flex justify-center">
+              <InstallPWAButton />
             </div>
           </CardContent>
         </Card>

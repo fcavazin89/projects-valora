@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsup src/server.ts --format cjs --dts --out-dir dist",
+    "build:netlify": "tsup netlify/functions/api.ts --format cjs --out-dir netlify/functions/dist --external sqlite3 --no-splitting",
     "start": "node dist/server.js",
     "migrate": "tsx src/db/migrate.ts",
     "migrate:rollback": "tsx src/db/migrate.ts --rollback",
@@ -26,6 +27,7 @@
     "helmet": "^7.1.0",
     "knex": "^3.1.0",
     "morgan": "^1.10.0",
+    "serverless-http": "^4.0.0",
     "sqlite3": "^6.0.1",
     "zod": "^3.23.8"
   },
