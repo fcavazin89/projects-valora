@@ -1,0 +1,41 @@
+[build]
+  command = "pnpm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "10"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Variáveis de ambiente de produção
+# Configure em: Netlify > Site > Environment Variables
+# NEXT_PUBLIC_WEB3AUTH_CLIENT_ID = BMtfs9bDQu20v7ZcW-Y92v3EOBXgEh4Gcmj0QOpufg1LNBFS4MxroXjNDvYMRMJVDIinvsAv9Up2rjqdMvWjmtE
+# NEXT_PUBLIC_API_URL             = https://sua-valora-api.com
+# NEXT_PUBLIC_RPC_URL             = https://rpc.ankr.com/eth_sepolia
+# NEXT_PUBLIC_CONTRACT_ADDRESS    = 0x...
+# NEXT_PUBLIC_BLOCK_EXPLORER      = https://sepolia.etherscan.io
+# NEXT_PUBLIC_VOUCHER_APP_URL     = https://voucher.netlify.app
+# PRIVATE_KEY                     = 0x...  (NUNCA expor no client)
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=(self)"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
